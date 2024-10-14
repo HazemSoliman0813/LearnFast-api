@@ -1,6 +1,7 @@
 from enum import Enum
 
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import FastAPI, Query
 
 app = FastAPI()
 
@@ -14,6 +15,13 @@ class languages(str, Enum):
 @app.get('/')
 async def root():
   return {"message":"Hello World"}
+
+@app.get("/items/annotated")
+async def read_items(q: Annotated[str | None, Query(max_length=50)] = None):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 @app.get('/items/{item_id}')
 async def items(item_id: int):
